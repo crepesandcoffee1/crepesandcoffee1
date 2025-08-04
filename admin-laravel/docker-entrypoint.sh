@@ -1,28 +1,17 @@
 #!/bin/bash
 set -e
 
-# Generar APP_KEY si no existe
-if [ -z "$APP_KEY" ]; then
-    echo "Generating APP_KEY..."
-    php artisan key:generate --show
-fi
+echo "Starting Laravel application..."
 
-# Cache de configuración para producción
-echo "Optimizing for production..."
-php artisan config:cache
-php artisan route:cache
+# Solo hacer cache básico
+php artisan config:cache || true
+php artisan route:cache || true
 
-# Ejecutar migraciones
-echo "Running migrations..."
-php artisan migrate --force
+# Migraciones sin timeout
+php artisan migrate --force --no-interaction || true
 
-# Crear enlace simbólico para storage
-echo "Linking storage..."
+# Storage link
 php artisan storage:link || true
 
-# Poblar base de datos si está vacía
-echo "Seeding database if needed..."
-php artisan db:seed --force || true
-
-echo "Starting application..."
+echo "Application ready"
 exec "$@" 
