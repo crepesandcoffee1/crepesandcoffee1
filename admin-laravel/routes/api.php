@@ -28,6 +28,22 @@ Route::post('/test-login', function (Request $request) {
     ]);
 });
 
+// Ruta de prueba para ADMIN login sin DB
+Route::post('/admin/test-login', function (Request $request) {
+    return response()->json([
+        'message' => 'Admin login test successful - CORS working!',
+        'email' => $request->input('email'),
+        'status' => 'working',
+        'token' => 'test-admin-token-12345',
+        'user' => [
+            'id' => 1,
+            'name' => 'Test Admin',
+            'email' => $request->input('email'),
+            'role' => 'admin'
+        ]
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
