@@ -118,6 +118,53 @@ Route::get('/test-env', function () {
     ]);
 });
 
+// Ruta para probar conexión PostgreSQL RAW (sin Laravel DB)
+Route::get('/test-raw-db', function () {
+    try {
+        $dbUrl = env('DB_URL');
+        
+        if (!$dbUrl) {
+            return response()->json([
+                'message' => 'DB_URL not found',
+                'status' => 'error'
+            ], 500);
+        }
+        
+        // Parse DB_URL manualmente
+        $url = parse_url($dbUrl);
+        
+        $dsn = sprintf(
+            'pgsql:host=%s;port=%d;dbname=%s;sslmode=disable',
+            $url['host'],
+            $url['port'] ?? 5432,
+            ltrim($url['path'], '/')
+        );
+        
+        $pdo = new PDO($dsn, $url['user'], $url['pass'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 60,
+            PDO::ATTR_PERSISTENT => false,
+        ]);
+        
+        // Probar query simple
+        $result = $pdo->query("SELECT version()")->fetchColumn();
+        
+        return response()->json([
+            'message' => 'Raw PostgreSQL connection successful',
+            'version' => $result,
+            'dsn' => str_replace($url['pass'], '[HIDDEN]', $dsn),
+            'status' => 'connected'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Raw PostgreSQL connection failed',
+            'error' => $e->getMessage(),
+            'status' => 'error'
+        ], 500);
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
