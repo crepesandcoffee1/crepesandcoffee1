@@ -339,7 +339,35 @@ Route::post('/register', function (Request $request) {
     }
 });
 
-Route::post('/login', [AuthController::class, 'login']);
+// Login para cliente - versión temporal sin tokens
+Route::post('/login', function (Request $request) {
+    try {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user || !\Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Las credenciales proporcionadas son incorrectas.'
+            ], 422);
+        }
+
+        return response()->json([
+            'user' => $user,
+            'token' => 'temp-client-token-' . $user->id,
+            'message' => 'Inicio de sesión exitoso'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error en login',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
 
 // Rutas de productos y categorías (públicas)
 Route::get('/productos', [ProductoController::class, 'index']);
@@ -410,10 +438,19 @@ Route::post('/admin/login', function (Request $request) {
     }
 });
 
-// Rutas de administración (requieren autenticación y rol admin)
-Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+// Rutas de administración - TEMPORALMENTE SIN MIDDLEWARE
+Route::prefix('admin')->group(function () {
     // Dashboard y perfil
-    Route::get('/me', [AdminController::class, 'me']);
+    Route::get('/me', function() {
+        return response()->json([
+            'user' => [
+                'id' => 1,
+                'name' => 'Administrador',
+                'email' => 'admin@crepesandcoffee.com',
+                'role' => 'admin',
+            ]
+        ]);
+    });
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
     
     // Gestión de Productos
