@@ -94,13 +94,16 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'require'),
-            'options' => extension_loaded('pdo_pgsql') ? [
+            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslcert' => env('DB_SSL_CERT'),
+            'sslkey' => env('DB_SSL_KEY'),
+            'sslrootcert' => env('DB_SSL_CA'),
+            'options' => extension_loaded('pdo_pgsql') ? array_filter([
                 PDO::PGSQL_ATTR_DISABLE_PREPARES => true,
                 PDO::ATTR_TIMEOUT => 120,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_PERSISTENT => false,
-            ] : [],
+            ]) : [],
         ],
 
         'sqlsrv' => [
