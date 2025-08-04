@@ -237,8 +237,37 @@ Route::get('/test-dsn', function () {
 |--------------------------------------------------------------------------
 */
 
-// Rutas públicas
-Route::post('/register', [AuthController::class, 'register']);
+// Rutas públicas - versión simplificada para debug
+Route::post('/register', function (Request $request) {
+    try {   
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => \Hash::make($request->password),
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'rol' => 'cliente',
+        ]);
+
+        return response()->json([
+            'user' => $user,
+            'message' => 'Usuario registrado exitosamente'
+        ], 201);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error en registro',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::post('/login', [AuthController::class, 'login']);
 
 // Rutas de productos y categorías (públicas)
