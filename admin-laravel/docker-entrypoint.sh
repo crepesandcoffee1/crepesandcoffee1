@@ -11,7 +11,6 @@ fi
 echo "Optimizing for production..."
 php artisan config:cache
 php artisan route:cache
-php artisan view:cache
 
 # Ejecutar migraciones
 echo "Running migrations..."
