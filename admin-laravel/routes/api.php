@@ -134,7 +134,7 @@ Route::get('/test-raw-db', function () {
         $url = parse_url($dbUrl);
         
         $dsn = sprintf(
-            'pgsql:host=%s;port=%d;dbname=%s;sslmode=disable',
+            'pgsql:host=%s;port=%d;dbname=%s;sslmode=require',
             $url['host'],
             $url['port'] ?? 5432,
             ltrim($url['path'], '/')
@@ -142,8 +142,11 @@ Route::get('/test-raw-db', function () {
         
         $pdo = new PDO($dsn, $url['user'], $url['pass'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_TIMEOUT => 60,
+            PDO::ATTR_TIMEOUT => 120,
             PDO::ATTR_PERSISTENT => false,
+            PDO::PGSQL_ATTR_SSL_CERT => false,
+            PDO::PGSQL_ATTR_SSL_KEY => false,
+            PDO::PGSQL_ATTR_SSL_ROOTCERT => false,
         ]);
         
         // Probar query simple
@@ -159,6 +162,43 @@ Route::get('/test-raw-db', function () {
     } catch (\Exception $e) {
         return response()->json([
             'message' => 'Raw PostgreSQL connection failed',
+            'error' => $e->getMessage(),
+            'status' => 'error'
+        ], 500);
+    }
+});
+
+// Ruta para probar conexión con DB_URL directo (como DSN)
+Route::get('/test-dsn', function () {
+    try {
+        $dbUrl = env('DB_URL');
+        
+        if (!$dbUrl) {
+            return response()->json([
+                'message' => 'DB_URL not found',
+                'status' => 'error'
+            ], 500);
+        }
+        
+        // Usar DB_URL directamente como DSN para PDO
+        $pdo = new PDO($dbUrl, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 120,
+            PDO::ATTR_PERSISTENT => false,
+        ]);
+        
+        // Probar query simple
+        $result = $pdo->query("SELECT version()")->fetchColumn();
+        
+        return response()->json([
+            'message' => 'Direct DSN connection successful',
+            'version' => $result,
+            'status' => 'connected'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Direct DSN connection failed',
             'error' => $e->getMessage(),
             'status' => 'error'
         ], 500);
