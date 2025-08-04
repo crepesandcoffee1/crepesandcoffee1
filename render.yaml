@@ -61,6 +61,8 @@ services:
         fromDatabase:
           name: crepes-coffee-db
           property: connectionString
+      - key: DB_SSLMODE
+        value: require
       - key: CORS_ALLOWED_ORIGINS
         value: https://crepes-coffee-client.onrender.com,https://crepes-coffee-admin.onrender.com
       - key: SANCTUM_STATEFUL_DOMAINS
