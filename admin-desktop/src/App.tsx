@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Configuración de la API
-const API_BASE_URL = 'http://localhost:8001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001/api';
 
 // Configurar interceptor para incluir token en todas las requests
 axios.interceptors.request.use((config) => {
