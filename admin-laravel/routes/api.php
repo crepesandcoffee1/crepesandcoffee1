@@ -27,6 +27,52 @@ Route::post('/test-simple', function (Request $request) {
     ]);
 });
 
+// Ruta para probar paso a paso SIN crear usuario
+Route::post('/test-steps', function (Request $request) {
+    $results = [];
+    
+    try {
+        $results['step1'] = 'Request received';
+        
+        $results['step2'] = 'Input parsing';
+        $name = $request->input('name', 'Test User');
+        $email = $request->input('email', 'test@example.com');
+        $results['parsed_data'] = ['name' => $name, 'email' => $email];
+        
+        $results['step3'] = 'Hash test';
+        $password = \Hash::make('12345678');
+        $results['hash_length'] = strlen($password);
+        
+        $results['step4'] = 'Model class check';
+        $results['user_model_exists'] = class_exists('\App\Models\User');
+        
+        $results['step5'] = 'Database connection test';
+        $results['db_connection'] = \DB::connection()->getPdo() ? 'OK' : 'FAIL';
+        
+        $results['step6'] = 'Users table exists';
+        $results['users_table'] = \Schema::hasTable('users');
+        
+        $results['step7'] = 'Table columns';
+        if (\Schema::hasTable('users')) {
+            $results['columns'] = \Schema::getColumnListing('users');
+        }
+        
+        return response()->json([
+            'message' => 'All steps completed successfully',
+            'results' => $results,
+            'status' => 'success'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error in step testing',
+            'error' => $e->getMessage(),
+            'results' => $results,
+            'status' => 'error'
+        ], 500);
+    }
+});
+
 // Ruta de prueba para registro sin tokens
 Route::post('/test-register', function (Request $request) {
     try {
