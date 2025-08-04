@@ -1,0 +1,76 @@
+services:
+  # Backend Laravel API
+  - type: web
+    name: crepes-coffee-api
+    runtime: php
+    plan: free
+    buildCommand: |
+      cd admin-laravel &&
+      composer install --no-dev --optimize-autoloader &&
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan view:cache &&
+      php artisan migrate --force &&
+      php artisan storage:link
+    startCommand: |
+      cd admin-laravel &&
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: error
+      - key: FILESYSTEM_DISK
+        value: public
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+  # Frontend Cliente Web
+  - type: web
+    name: crepes-coffee-client
+    runtime: static
+    plan: free
+    buildCommand: |
+      cd cliente-web &&
+      npm ci &&
+      npm run build
+    staticPublishPath: ./cliente-web/build
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: crepes-coffee-api
+          property: host
+        value: https://crepes-coffee-api.onrender.com/api
+
+  # Admin Web Panel
+  - type: web
+    name: crepes-coffee-admin
+    runtime: static
+    plan: free
+    buildCommand: |
+      cd admin-web &&
+      npm ci &&
+      npm run build
+    staticPublishPath: ./admin-web/build
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: crepes-coffee-api
+          property: host
+        value: https://crepes-coffee-api.onrender.com/api
+
+databases:
+  - name: crepes-coffee-db
+    plan: free
+    region: oregon 
