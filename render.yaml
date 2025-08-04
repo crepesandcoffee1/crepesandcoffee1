@@ -58,7 +58,7 @@ services:
           name: crepes-coffee-db
           property: password
       - key: DB_SSLMODE
-        value: prefer
+        value: disable
       - key: DB_SSL_CA
         value: ""
       - key: DB_SSL_CERT
