@@ -7,6 +7,7 @@ services:
     buildCommand: |
       cd admin-laravel &&
       composer install --no-dev --optimize-autoloader &&
+      touch database/database.sqlite &&
       php artisan config:cache &&
       php artisan route:cache &&
       php artisan view:cache &&
@@ -36,39 +37,17 @@ services:
       - key: QUEUE_CONNECTION
         value: database
       - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        fromDatabase:
-          name: crepes-coffee-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: crepes-coffee-db
-          property: port
+        value: sqlite
       - key: DB_DATABASE
-        fromDatabase:
-          name: crepes-coffee-db
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: crepes-coffee-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: crepes-coffee-db
-          property: password
-      - key: DB_SSLMODE
-        value: disable
-      - key: DB_SSL_CA
-        value: ""
-      - key: DB_SSL_CERT
-        value: ""
-      - key: DB_SSL_KEY
-        value: ""
+        value: /opt/render/project/src/admin-laravel/database/database.sqlite
       - key: CORS_ALLOWED_ORIGINS
         value: https://crepes-coffee-client.onrender.com,https://crepes-coffee-admin.onrender.com
       - key: SANCTUM_STATEFUL_DOMAINS
         value: crepes-coffee-client.onrender.com,crepes-coffee-admin.onrender.com
+      - key: MERCADOPAGO_ACCESS_TOKEN
+        value: TEST-1556768538491115-080408-d99f5c9abc5f5bb47fda7846aa7f57d6-1720081365
+      - key: FRONTEND_URL
+        value: https://crepes-coffee-client.onrender.com
 
   # Frontend Cliente Web
   - type: web
