@@ -45,7 +45,7 @@ Route::post('/admin/test-login', function (Request $request) {
 });
 
 // Ruta para crear usuario admin en PostgreSQL
-Route::post('/create-admin', function (Request $request) {
+Route::get('/create-admin', function (Request $request) {
     try {
         $existingAdmin = \App\Models\User::where('email', 'admin@crepesandcoffee.com')->first();
         
