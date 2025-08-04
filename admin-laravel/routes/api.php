@@ -9,6 +9,25 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\AdminController;
 
+// Ruta de prueba para verificar CORS
+Route::get('/test', function () {
+    return response()->json([
+        'message' => 'CORS test successful',
+        'timestamp' => now(),
+        'status' => 'working'
+    ]);
+});
+
+// Ruta de prueba para login sin DB
+Route::post('/test-login', function (Request $request) {
+    return response()->json([
+        'message' => 'Login test successful',
+        'email' => $request->input('email'),
+        'status' => 'working',
+        'token' => 'test-token-12345'
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
