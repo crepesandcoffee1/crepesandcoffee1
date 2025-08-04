@@ -18,21 +18,45 @@ Route::get('/test', function () {
     ]);
 });
 
+// Ruta POST simple para probar
+Route::post('/test-simple', function (Request $request) {
+    return response()->json([
+        'message' => 'POST test successful',
+        'data' => $request->all(),
+        'status' => 'working'
+    ]);
+});
+
 // Ruta de prueba para registro sin tokens
 Route::post('/test-register', function (Request $request) {
     try {
+        // Paso 1: Probar que llegamos aquí
+        $step = 'inicio';
+        
+        // Paso 2: Probar validación básica  
+        $step = 'validacion';
+        $name = $request->input('name', 'Test User');
+        $email = $request->input('email', 'test@example.com');
+        
+        // Paso 3: Probar Hash
+        $step = 'hash';
+        $password = \Hash::make('12345678');
+        
+        // Paso 4: Probar creación
+        $step = 'creacion';
         $user = \App\Models\User::create([
-            'name' => $request->input('name', 'Test User'),
-            'email' => $request->input('email', 'test@example.com'),
-            'password' => \Hash::make($request->input('password', '12345678')),
-            'telefono' => $request->input('telefono', '123456789'),
-            'direccion' => $request->input('direccion', 'Test Address'),
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'telefono' => '123456789',
+            'direccion' => 'Test Address',
             'rol' => 'cliente',
         ]);
         
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user,
+            'step' => $step,
             'status' => 'success'
         ]);
         
@@ -41,7 +65,8 @@ Route::post('/test-register', function (Request $request) {
             'message' => 'Error creating user',
             'error' => $e->getMessage(),
             'line' => $e->getLine(),
-            'file' => $e->getFile(),
+            'file' => basename($e->getFile()),
+            'step' => $step ?? 'unknown',
             'status' => 'error'
         ], 500);
     }
