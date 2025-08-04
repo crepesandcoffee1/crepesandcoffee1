@@ -44,6 +44,42 @@ Route::post('/admin/test-login', function (Request $request) {
     ]);
 });
 
+// Ruta para crear usuario admin en PostgreSQL
+Route::post('/create-admin', function (Request $request) {
+    try {
+        $existingAdmin = \App\Models\User::where('email', 'admin@crepesandcoffee.com')->first();
+        
+        if ($existingAdmin) {
+            return response()->json([
+                'message' => 'Admin user already exists',
+                'email' => $existingAdmin->email,
+                'status' => 'exists'
+            ]);
+        }
+        
+        $admin = \App\Models\User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@crepesandcoffee.com',
+            'password' => \Hash::make('admin123'),
+            'rol' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+        
+        return response()->json([
+            'message' => 'Admin user created successfully',
+            'email' => $admin->email,
+            'status' => 'created'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error creating admin user',
+            'error' => $e->getMessage(),
+            'status' => 'error'
+        ], 500);
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
