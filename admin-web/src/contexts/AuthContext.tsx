@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
+// Configuración de la API
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+
 interface User {
   id: number;
   name: string;
@@ -47,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('admin_token');
       if (token) {
         try {
-          const response = await axios.get('http://localhost:8000/api/admin/me');
+          const response = await axios.get(`${API_BASE_URL}/admin/me`);
           setUser(response.data.user);
         } catch (error) {
           localStorage.removeItem('admin_token');
@@ -62,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/admin/login', {
+      const response = await axios.post(`${API_BASE_URL}/admin/login`, {
         email,
         password
       });
