@@ -21,6 +21,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://crepes-coffee-api.onrender.com
       - key: LOG_LEVEL
         value: error
       - key: FILESYSTEM_DISK
@@ -31,6 +35,36 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: crepes-coffee-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: crepes-coffee-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: crepes-coffee-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: crepes-coffee-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: crepes-coffee-db
+          property: password
+      - key: DB_URL
+        fromDatabase:
+          name: crepes-coffee-db
+          property: connectionString
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://crepes-coffee-client.onrender.com,https://crepes-coffee-admin.onrender.com
+      - key: SANCTUM_STATEFUL_DOMAINS
+        value: crepes-coffee-client.onrender.com,crepes-coffee-admin.onrender.com
 
   # Frontend Cliente Web
   - type: web
@@ -45,10 +79,6 @@ services:
     pullRequestPreviewsEnabled: false
     envVars:
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: crepes-coffee-api
-          property: host
         value: https://crepes-coffee-api.onrender.com/api
 
   # Admin Web Panel
@@ -64,10 +94,6 @@ services:
     pullRequestPreviewsEnabled: false
     envVars:
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: crepes-coffee-api
-          property: host
         value: https://crepes-coffee-api.onrender.com/api
 
 databases:
