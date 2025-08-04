@@ -80,6 +80,44 @@ Route::get('/create-admin', function (Request $request) {
     }
 });
 
+// Ruta para probar conexión PostgreSQL directa
+Route::get('/test-db', function () {
+    try {
+        $connection = \DB::connection('pgsql');
+        $pdo = $connection->getPdo();
+        
+        return response()->json([
+            'message' => 'Database connection successful',
+            'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
+            'server_info' => $pdo->getAttribute(PDO::ATTR_SERVER_INFO),
+            'status' => 'connected'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Database connection failed',
+            'error' => $e->getMessage(),
+            'status' => 'error'
+        ], 500);
+    }
+});
+
+// Ruta para probar configuración de entorno
+Route::get('/test-env', function () {
+    return response()->json([
+        'DB_CONNECTION' => env('DB_CONNECTION'),
+        'DB_HOST' => env('DB_HOST'),
+        'DB_PORT' => env('DB_PORT'),
+        'DB_DATABASE' => env('DB_DATABASE'),
+        'DB_USERNAME' => env('DB_USERNAME'),
+        'DB_PASSWORD' => env('DB_PASSWORD') ? '[SET]' : '[NOT SET]',
+        'DB_URL' => env('DB_URL') ? '[SET]' : '[NOT SET]',
+        'DB_SSLMODE' => env('DB_SSLMODE'),
+        'PGSSLMODE' => env('PGSSLMODE'),
+        'status' => 'config_displayed'
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
