@@ -100,9 +100,6 @@ return [
                 PDO::ATTR_TIMEOUT => 120,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_PERSISTENT => false,
-                PDO::PGSQL_ATTR_SSL_CERT => false,
-                PDO::PGSQL_ATTR_SSL_KEY => false,
-                PDO::PGSQL_ATTR_SSL_ROOTCERT => false,
             ] : [],
         ],
 
