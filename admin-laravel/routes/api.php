@@ -18,6 +18,35 @@ Route::get('/test', function () {
     ]);
 });
 
+// Ruta de prueba para registro sin tokens
+Route::post('/test-register', function (Request $request) {
+    try {
+        $user = \App\Models\User::create([
+            'name' => $request->input('name', 'Test User'),
+            'email' => $request->input('email', 'test@example.com'),
+            'password' => \Hash::make($request->input('password', '12345678')),
+            'telefono' => $request->input('telefono', '123456789'),
+            'direccion' => $request->input('direccion', 'Test Address'),
+            'rol' => 'cliente',
+        ]);
+        
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $user,
+            'status' => 'success'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error creating user',
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+            'status' => 'error'
+        ], 500);
+    }
+});
+
 // Ruta de prueba para login sin DB
 Route::post('/test-login', function (Request $request) {
     return response()->json([
